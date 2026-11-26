@@ -1,0 +1,38 @@
+pluginManagement {
+    repositories {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri(System.getenv('AOS_AGP_MAVEN'))
+                }
+            }
+            filter {
+                includeModule('com.android.tools.build', 'gradle')
+                includeModule('com.android.tools.build', 'builder')
+                includeModule('com.android.application', 'com.android.application.gradle.plugin')
+            }
+        }
+        maven {
+            url = uri(System.getenv('AOS_AGP_DEPENDENCIES'))
+            metadataSources {
+                gradleMetadata()
+                mavenPom()
+            }
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        maven {
+            url = uri(System.getenv('AOS_AGP_DEPENDENCIES'))
+            metadataSources {
+                gradleMetadata()
+                mavenPom()
+            }
+        }
+    }
+}
+
+rootProject.name = 'aosstudio-agp-check'
+include 'java-app', 'kotlin-app'
