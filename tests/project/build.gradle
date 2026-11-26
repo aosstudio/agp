@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application' version '9.5.2' apply false
+}
+
+subprojects {
+    apply plugin: 'com.android.application'
+
+    android {
+        namespace = 'sdk.probe'
+        compileSdk = 37
+        buildToolsVersion = '36.0.0'
+        defaultConfig {
+            minSdk = 24
+            targetSdk = 37
+        }
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+        buildTypes {
+            debug {
+                minifyEnabled = project.hasProperty('verifyMinify')
+            }
+        }
+    }
+
+    tasks.register('inspectAgp') {
+        doLast {
+            def plugin = project.plugins.getPlugin('com.android.application')
+            def loader = plugin.class.classLoader
+            def implementation = Class.forName("com.android.build.gradle.internal.plugins.AppPlugin", false, loader)
+            def d8 = Class.forName('com.android.tools.r8.D8', false, loader)
+            assert implementation.protectionDomain.codeSource.location.path.contains('gradle-9.5.2.jar')
+            assert d8.protectionDomain.codeSource.location.path.contains('builder-9.5.2.jar')
+            println('AGP 9.5.2 and its embedded D8 loaded')
+        }
+    }
+}
